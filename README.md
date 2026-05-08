@@ -1,1 +1,1 @@
-Curso FastAPI do zero a api
+Desenvolvimento de um mini super projeto bem feito
