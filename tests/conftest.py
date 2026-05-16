@@ -11,6 +11,7 @@ from fastapi_full.app import app
 from fastapi_full.database import get_session
 from fastapi_full.models import User, table_registry
 from fastapi_full.security import get_password_hash
+from fastapi_full.settings import Settings
 
 
 @pytest.fixture
@@ -80,7 +81,12 @@ def user(session: Session):
 @pytest.fixture
 def token(client, user):
     response = client.post(
-        '/token',
+        '/auth/token',
         data={'username': user.email, 'password': user.clean_password},
     )
     return response.json()['access_token']
+
+
+@pytest.fixture
+def settings():
+    return Settings()

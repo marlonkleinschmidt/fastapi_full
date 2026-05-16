@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class Message(BaseModel):
@@ -25,3 +25,8 @@ class UserList(BaseModel):
 class Token(BaseModel):
     access_token: str  # O token JWT que vamos gerar
     token_type: str  # O modelo que o cliente deve usar para Autorização
+
+
+class FilterPage(BaseModel):
+    offset: int = Field(ge=0, default=0)
+    limit: int = Field(ge=0, default=10)
