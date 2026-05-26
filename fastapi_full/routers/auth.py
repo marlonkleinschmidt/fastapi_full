@@ -9,7 +9,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_full.database import get_session
 from fastapi_full.models import User
 from fastapi_full.schemas import Token
-from fastapi_full.security import create_access_token, verify_password
+from fastapi_full.security import (
+    create_access_token,
+    get_current_user,
+    verify_password,
+)
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
@@ -41,3 +45,12 @@ async def login_for_access_token(
     access_token = create_access_token(data={'sub': user.email})
 
     return {'access_token': access_token, 'token_type': 'Bearer'}
+
+
+@router.post('/refresh_token', response_model=Token)
+async def refresh_access_token(
+    user: Annotated[User, Depends(get_current_user)],
+):
+    new_access_token = create_access_token(data={'sub': user.email})
+
+    return {'access_token': new_access_token, 'token_type': 'Bearer'}
