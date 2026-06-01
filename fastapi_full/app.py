@@ -8,7 +8,7 @@ from fastapi_full.schemas import (
     Message,
 )
 
-app = FastAPI(title='Minha API FastAPI')
+app = FastAPI(title='FastAPI Full')
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(todos.router)
