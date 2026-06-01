@@ -1,3 +1,5 @@
+import asyncio
+import sys
 from contextlib import contextmanager
 from datetime import datetime
 
@@ -7,13 +9,16 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.pool import StaticPool
+from testcontainers.postgres import PostgresContainer
 
 from fastapi_full.app import app
 from fastapi_full.database import get_session
 from fastapi_full.models import User, table_registry
 from fastapi_full.security import get_password_hash
 from fastapi_full.settings import Settings
+
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 @pytest.fixture
@@ -28,14 +33,14 @@ def client(session):
     app.dependency_overrides.clear()
 
 
-@pytest_asyncio.fixture(loop_scope='function')  # ✅ adicionado
-async def session():
-    engine = create_async_engine(
-        'sqlite+aiosqlite:///:memory:',
-        connect_args={'check_same_thread': False},
-        poolclass=StaticPool,
-    )
+@pytest_asyncio.fixture(scope='session', loop_scope='session')
+def engine():
+    with PostgresContainer('postgres:16', driver='psycopg') as postgres:
+        yield create_async_engine(postgres.get_connection_url())
 
+
+@pytest_asyncio.fixture(scope='function')
+async def session(engine):
     async with engine.begin() as conn:
         await conn.run_sync(table_registry.metadata.create_all)
 
@@ -76,7 +81,7 @@ async def user(session: AsyncSession):
     return user
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(loop_scope='function')
 async def other_user(session):
     password = 'testtest'
     user = UserFactory(password=get_password_hash(password))

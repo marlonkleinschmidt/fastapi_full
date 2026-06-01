@@ -145,3 +145,44 @@ def test_delete_todo_error(client, token):
 
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {'detail': 'Task not found.'}
+
+
+@pytest.mark.asyncio
+async def test_delete_oyher_user_todo(session, client, token, other_user):
+    todo_other_user = TodoFactory(user_id=other_user.id)
+    session.add(todo_other_user)
+    await session.commit()
+
+    response = client.delete(
+        f'/todos/{todo_other_user.id}',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Task not found.'}
+
+
+def test_patch_todo_error(client, token):
+    response = client.patch(
+        '/todos/10',
+        json={},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Task not found.'}
+
+
+@pytest.mark.asyncio
+async def test_patch_todo(session, client, user, token):
+    todo = TodoFactory(user_id=user.id)
+
+    session.add(todo)
+    await session.commit()
+
+    response = client.patch(
+        f'/todos/{todo.id}',
+        json={'title': 'teste!'},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()['title'] == 'teste!'
