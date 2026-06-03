@@ -145,18 +145,17 @@ O projeto utiliza **GitHub Actions** para automatizar a execução dos testes a 
 
 ### Estrutura do arquivo `.github/workflows/pipeline.yaml`
 
-```yaml
 name: Pipeline
 
 on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+push:
+branches: ["main"]
+pull_request:
+branches: ["main"]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+test:
+runs-on: ubuntu-latest
 
     steps:
       - name: Checkout do código
@@ -165,7 +164,7 @@ jobs:
       - name: Instalar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
       - name: Instalar Poetry
         run: pipx install poetry
@@ -180,7 +179,6 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           ALGORITHM: ${{ secrets.ALGORITHM }}
           ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-```
 
 ### O que cada bloco faz
 
