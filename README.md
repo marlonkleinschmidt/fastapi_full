@@ -140,7 +140,7 @@ O projeto utiliza **GitHub Actions** para automatizar a execução dos testes a 
 É a plataforma de CI/CD nativa do GitHub. A cada evento (push, PR, tag), ela sobe um ambiente limpo, instala as dependências e executa os passos definidos no arquivo `.yaml` — garantindo que o código novo não quebra o que já existia.
 
 ### Estrutura do arquivo `.github/workflows/pipeline.yaml`
-
+```
 name: Pipeline
 
 on:
@@ -175,7 +175,7 @@ runs-on: ubuntu-latest
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           ALGORITHM: ${{ secrets.ALGORITHM }}
           ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-
+```
 ### O que cada bloco faz
 
 - **`on`** — define quando o pipeline dispara; neste caso em todo push ou PR na `main`
